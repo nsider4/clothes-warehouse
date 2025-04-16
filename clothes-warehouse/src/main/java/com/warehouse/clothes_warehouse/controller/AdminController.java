@@ -68,7 +68,7 @@ public class AdminController {
                 item.getPrice()
         );
 
-        return "redirect:/add-item?success";
+        return "redirect:/admin/add-item?success";
     }
 
     @GetMapping("/admin/distribution-centres")
