@@ -1,4 +1,4 @@
-package com.warehouse.clothes_warehouse.model;
+package com.nicolas.distribution_centre_api.dto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class ItemDTO {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +20,9 @@ public class ItemDTO {
     private String brand;
     private int quantity;
 
-    public ItemDTO() {}
+    public Item() {}
 
-    public ItemDTO(String name, String brand, int quantity) {
+    public Item(String name, String brand, int quantity) {
         this.name = name;
         this.brand = brand;
         this.quantity = quantity;

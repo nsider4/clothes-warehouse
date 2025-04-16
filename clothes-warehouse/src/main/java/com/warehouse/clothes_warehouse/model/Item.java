@@ -1,38 +1,34 @@
 package com.warehouse.clothes_warehouse.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.math.BigDecimal;
-
+@Getter
+@Setter
 @Entity
-@Table(name = "items")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is required")
     private String name;
+    private String brand;
+    private int quantity;
+    private int yearOfCreation;
+    private double price;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Brand is required")
-    private Brand brand;
+    public Item() {}
 
-    @Min(value = 1001, message = "Price must be more than 1000")
-    @NotNull(message = "Price is required")
-    private BigDecimal price;
-
-    @NotNull(message = "Year of creation is required")
-    @Min(value = 2022, message = "Year of creation must be after 2021")
-    private Integer yearOfCreation;
+    public Item(String name, String brand, int quantity, int yearOfCreation, double price) {
+        this.name = name;
+        this.brand = brand;
+        this.quantity = quantity;
+        this.yearOfCreation = yearOfCreation;
+        this.price = price;
+    }
 }

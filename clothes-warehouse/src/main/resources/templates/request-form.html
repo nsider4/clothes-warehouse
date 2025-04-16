@@ -5,74 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Request Form</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            background-color: white;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .form-select, .form-control {
+            border-radius: 0.5rem;
+        }
+
+        .btn-primary {
+            border-radius: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-box {
+            background-color: #f1f3f5;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-4">
-    <h1>Request Item Transfer</h1>
+<div class="container mt-5">
+    <div class="card">
+        <h1>Request Item Transfer</h1>
 
-    <!-- Source Centre and Item Selection Form -->
-    <form th:action="@{/admin/request-form}" method="get" class="form-group">
-        <div class="mb-3">
-            <label for="sourceCentreId" class="form-label">Source Distribution Centre:</label>
-            <select id="sourceCentreId" name="sourceCentreId" class="form-select" onchange="this.form.submit()">
-                <option value="" disabled selected>Select a centre</option>
-                <th:block th:each="centre : ${centres}">
-                    <option th:value="${centre.id}"
-                            th:text="${centre.name + ' - Lat: ' + centre.latitude + ', Lon: ' + centre.longitude}"
-                            th:selected="${sourceCentreId == centre.id}"></option>
-                </th:block>
-            </select>
-        </div>
+        <!-- Source Centre and Item Selection Form -->
+        <form th:action="@{/admin/request-form}" method="get">
+            <div class="form-section">
+                <label for="sourceCentreId" class="form-label">Source Distribution Centre:</label>
+                <select id="sourceCentreId" name="sourceCentreId" class="form-select" onchange="this.form.submit()">
+                    <option value="" disabled selected>Select a centre</option>
+                    <th:block th:each="centre : ${centres}">
+                        <option th:value="${centre.id}"
+                                th:text="${centre.name + ' - Lat: ' + centre.latitude + ', Lon: ' + centre.longitude}"
+                                th:selected="${sourceCentreId == centre.id}"></option>
+                    </th:block>
+                </select>
+            </div>
 
-        <div class="mb-3" th:if="${sourceCentreId != null}">
-            <label for="itemId" class="form-label">Item:</label>
-            <select id="itemId" name="itemId" class="form-select" onchange="this.form.submit()">
-                <option value="" disabled selected>Select an item</option>
-                <th:block th:each="item : ${availableItems}">
-                    <option th:value="${item.id}"
-                            th:text="${item.name}"
-                            th:selected="${itemId == item.id}"></option>
-                </th:block>
-            </select>
-        </div>
-    </form>
+            <div class="form-section" th:if="${sourceCentreId != null}">
+                <label for="itemId" class="form-label">Item:</label>
+                <select id="itemId" name="itemId" class="form-select" onchange="this.form.submit()">
+                    <option value="" disabled selected>Select an item</option>
+                    <th:block th:each="item : ${availableItems}">
+                        <option th:value="${item.id}"
+                                th:text="${item.name}"
+                                th:selected="${itemId == item.id}"></option>
+                    </th:block>
+                </select>
+            </div>
+        </form>
 
-    <!-- Form to submit request -->
-    <form th:action="@{/admin/submit-request}" method="post" th:if="${selectedItem != null}">
-        <input type="hidden" name="sourceCentreId" th:value="${sourceCentreId}" />
-        <input type="hidden" name="itemId" th:value="${itemId}" />
+        <!-- Form to submit request -->
+        <form th:action="@{/admin/submit-request}" method="post" th:if="${selectedItem != null}">
+            <input type="hidden" name="sourceCentreId" th:value="${sourceCentreId}" />
+            <input type="hidden" name="itemId" th:value="${itemId}" />
 
-        <div class="mb-3">
-            <label class="form-label">Brand:</label>
-            <p th:text="${selectedItem.brand}"></p>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Available Quantity:</label>
-            <p th:text="${selectedItem.quantity}"></p>
-        </div>
+            <div class="form-section">
+                <label class="form-label">Brand:</label>
+                <div class="info-box" th:text="${selectedItem.brand}"></div>
+            </div>
 
-        <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity to Transfer:</label>
-            <input type="number" id="quantity" name="quantity" class="form-control" min="1" required />
-        </div>
+            <div class="form-section">
+                <label class="form-label">Available Quantity:</label>
+                <div class="info-box" th:text="${selectedItem.quantity}"></div>
+            </div>
 
-        <div class="mb-3">
-            <label for="destinationCentreId" class="form-label">Destination Distribution Centre:</label>
-            <select id="destinationCentreId" name="destinationCentreId" class="form-select" required>
-                <option value="" disabled selected>Select a centre</option>
-                <th:block th:each="centre : ${centres}">
-                    <option th:if="${centre.id != sourceCentreId}"
-                            th:value="${centre.id}"
-                            th:text="${centre.name + ' - Lat: ' + centre.latitude + ', Lon: ' + centre.longitude}"></option>
-                </th:block>
-            </select>
-        </div>
+            <div class="form-section">
+                <label for="quantity" class="form-label">Quantity to Transfer:</label>
+                <input type="number" id="quantity" name="quantity" class="form-control" min="1" required />
+            </div>
 
-        <button type="submit" class="btn btn-primary">Submit Request</button>
-    </form>
+            <div class="form-section">
+                <label for="destinationCentreId" class="form-label">Destination Distribution Centre:</label>
+                <select id="destinationCentreId" name="destinationCentreId" class="form-select" required>
+                    <option value="" disabled selected>Select a centre</option>
+                    <th:block th:each="centre : ${centres}">
+                        <option th:if="${centre.id != sourceCentreId}"
+                                th:value="${centre.id}"
+                                th:text="${centre.name + ' - Lat: ' + centre.latitude + ', Lon: ' + centre.longitude}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<!-- Add your JS files or CDN links here (Bootstrap JS, etc.) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

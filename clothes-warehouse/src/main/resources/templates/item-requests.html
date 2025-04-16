@@ -28,7 +28,9 @@
             <td th:text="${request.destinationCentreId}"></td>
             <td th:text="${request.status}"></td>
             <td>
-                <a th:href="@{/admin/item-requests/approve/{id}(id=${request.id})}" class="btn btn-success btn-sm">Approve</a>
+                <a th:if="${request.status != 'Approved'}"
+                   th:href="@{/admin/item-requests/approve/{id}(id=${request.id})}"
+                   class="btn btn-success btn-sm">Approve</a>
                 <button
                         class="btn btn-danger btn-sm"
                         data-bs-toggle="modal"
