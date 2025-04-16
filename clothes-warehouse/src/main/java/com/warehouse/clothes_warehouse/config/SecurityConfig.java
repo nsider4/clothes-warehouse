@@ -39,13 +39,17 @@ public class SecurityConfig {
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/add-item").hasAnyRole("ADMIN", "WAREHOUSE_EMPLOYEE")
                         .requestMatchers("/delete-item/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/distribution-centres").hasAnyRole("ADMIN", "WAREHOUSE_EMPLOYEE", "USER")
+                        .requestMatchers("/admin/distribution-centres/{id}/inventory").hasAnyRole("ADMIN", "WAREHOUSE_EMPLOYEE", "USER")
+                        .requestMatchers("/admin/item-requests").hasAnyRole("ADMIN", "WAREHOUSE_EMPLOYEE", "USER")
+                        .requestMatchers("/admin/dashboard").hasAnyRole("ADMIN", "WAREHOUSE_EMPLOYEE", "USER")
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "WAREHOUSE_EMPLOYEE")
                         .requestMatchers("/items").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
                         .loginPage("/login")
-                        .defaultSuccessUrl("/items", true)
+                        .defaultSuccessUrl("/admin/dashboard", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -58,5 +62,4 @@ public class SecurityConfig {
                 );
         return http.build();
     }
-
 }

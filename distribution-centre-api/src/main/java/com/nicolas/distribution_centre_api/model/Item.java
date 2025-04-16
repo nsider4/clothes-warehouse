@@ -1,4 +1,4 @@
-package com.warehouse.clothes_warehouse.model;
+package com.nicolas.distribution_centre_api.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

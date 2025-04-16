@@ -6,6 +6,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+<div class="container my-4">
+    <div class="d-flex justify-content-end">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-outline-danger">Logout</button>
+        </form>
+    </div>
+</div>
+
 <div class="container mt-5">
     <h1>Inventory for Distribution Centre: <span th:text="${centre.name}"></span></h1>
     <h4>Location:
@@ -13,12 +21,43 @@
         Longitude <span th:text="${centre.longitude}"></span>
     </h4>
 
+    <form class="row g-3 mb-4" method="get" th:action="@{/admin/distribution-centres/{id}/inventory(id=${centre.id})}">
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="search" placeholder="Search by Name or Brand" th:value="${param.search}">
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" name="sort">
+                <option value="">Sort By</option>
+                <option value="nameAsc" th:selected="${param.sort == 'nameAsc'}">Name (A-Z)</option>
+                <option value="nameDesc" th:selected="${param.sort == 'nameDesc'}">Name (Z-A)</option>
+                <option value="brandAsc" th:selected="${param.sort == 'brandAsc'}">Brand (A-Z)</option>
+                <option value="brandDesc" th:selected="${param.sort == 'brandDesc'}">Brand (Z-A)</option>
+                <option value="quantityAsc" th:selected="${param.sort == 'quantityAsc'}">Quantity (Low to High)</option>
+                <option value="quantityDesc" th:selected="${param.sort == 'quantityDesc'}">Quantity (High to Low)</option>
+                <option value="yearAsc" th:selected="${param.sort == 'yearAsc'}">Year (Oldest First)</option>
+                <option value="yearDesc" th:selected="${param.sort == 'yearDesc'}">Year (Newest First)</option>
+                <option value="priceAsc" th:selected="${param.sort == 'priceAsc'}">Price (Low to High)</option>
+                <option value="priceDesc" th:selected="${param.sort == 'priceDesc'}">Price (High to Low)</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100">Apply Filters</button>
+        </div>
+        <div class="col-md-2">
+            <a th:href="@{/admin/distribution-centres/{id}/inventory(id=${centre.id})}" class="btn btn-secondary w-100">Clear Filters</a>
+        </div>
+    </form>
+
+
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
             <th>Item Name</th>
             <th>Brand</th>
             <th>Quantity</th>
+            <th>Year of Creation</th>
+            <th>Price ($)</th>
+            <th th:if="${#authorization.expression('hasRole(''ADMIN'')')}">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -26,12 +65,54 @@
             <td th:text="${item.name}"></td>
             <td th:text="${item.brand}"></td>
             <td th:text="${item.quantity}"></td>
+            <td th:text="${item.yearOfCreation}"></td>
+            <td th:text="${item.price}"></td>
+            <td th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''WAREHOUSE_EMPLOYEE'')')}">
+                <button
+                        class="btn btn-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmDeleteModal"
+                        th:attr="data-centre-id=${centre.id}, data-item-id=${item.name}">
+                    Delete
+                </button>
+            </td>
         </tr>
         </tbody>
     </table>
 
     <a href="/admin/distribution-centres" class="btn btn-primary">Back to Distribution Centres</a>
 </div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this item from the inventory?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" th:action="@{/}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const deleteModal = document.getElementById('confirmDeleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const centreId = button.getAttribute('data-centre-id');
+        const itemId = button.getAttribute('data-item-id');
+        const form = document.getElementById('deleteForm');
+        form.setAttribute('action', `/admin/distribution-centres/${centreId}/inventory/delete/${itemId}`);
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
